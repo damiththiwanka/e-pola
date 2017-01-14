@@ -16,63 +16,66 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Category extends AppCompatActivity {
+import java.util.ArrayList;
 
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+import android.widget.Toast;
 
-    RelativeLayout rl;
-    GridView grid;
-    List<String> list;
-
+public class Category extends Activity implements OnItemClickListener
+{
+    GridView gridview;
+    GridViewAdapter gridviewAdapter;
+    ArrayList<Item> data = new ArrayList<Item>();
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_category);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setContentView(R.layout.content_category);
 
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-grid();
-
+        initView(); // Initialize the GUI Components
+        fillData(); // Insert The Data
+        setDataAdapter(); // Set the Data Adapter
     }
 
-    public void grid(){
-
-        rl=(RelativeLayout) findViewById(R.id.rl);
-        grid =new GridView(Category.this);
-        list=new ArrayList<>();
-
-        list.add("Dynamic 1");
-        list.add("Dynamic 2");
-        list.add("Dynamic 3");
-        list.add("Dynamic 4");
-        list.add("Dynamic 5");
-        list.add("Dynamic 6");
-        list.add("Dynamic 7");
-        list.add("Dynamic 8");
-        list.add("Dynamic 9");
-
-        ArrayAdapter<String> adp=new ArrayAdapter<String> (this,
-                android.R.layout.simple_dropdown_item_1line,list);
-        grid.setNumColumns(3);
-        grid.setBackgroundColor(Color.GRAY);
-        grid.setAdapter(adp);
-        rl.addView(grid);
-
-        grid.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-                                    long arg3) {
-                // TODO Auto-generated method stub
-
-                Toast.makeText(getBaseContext(), list.get(arg2),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+    // Initialize the GUI Components
+    private void initView()
+    {
+        gridview = (GridView) findViewById(R.id.gridView);
+        gridview.setOnItemClickListener(this);
     }
 
+    // Insert The Data
+    private void fillData()
+    {
+        data.add(new Item("Facebook", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Twitter", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Linked In", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Google", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Yahoo", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("YouTube", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Flickr", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Whatsapp", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Blogger", getResources().getDrawable(R.mipmap.ic_launcher)));
+    }
+
+    // Set the Data Adapter
+    private void setDataAdapter()
+    {
+        gridviewAdapter = new GridViewAdapter(getApplicationContext(), R.layout.category, data);
+        gridview.setAdapter(gridviewAdapter);
+    }
+
+    @Override
+    public void onItemClick(final AdapterView<?> arg0, final View view, final int position, final long id)
+    {
+        String message = "Clicked : " + data.get(position).getTitle();
+        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+    }
 
 }

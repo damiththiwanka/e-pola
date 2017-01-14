@@ -64,12 +64,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private static final int REQUEST_READ_CONTACTS = 0;
     private String JsonResponse = null;
 private  String state,msg;
+
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "admin@electfast.lk:admin", "user@electfast.lk:12345"
+            "admin@electfast.com:admin", "user@electfast.lk:12345"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -112,6 +113,16 @@ private  String state,msg;
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        Button guest = (Button) findViewById(R.id.bypass);
+        guest.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, Category.class);
+                // passing array index
+                i.putExtra("id", "guest");
+                startActivity(i);
+            }
+        });
     }
 
     private void populateAutoComplete() {
