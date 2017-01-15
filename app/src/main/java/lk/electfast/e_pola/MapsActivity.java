@@ -9,7 +9,6 @@ import android.location.LocationManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -17,16 +16,23 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.apache.http.HttpRequest;
+import org.apache.http.HttpRequestFactory;
+
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
     private GoogleMap mMap;
-    double latitude = 0;
-    double longitude = 0;
+    double mlatitude = 0;
+    double mlongitude = 0;
     private int PROXIMITY_RADIUS = 5000;
-    private static final String GOOGLE_API_KEY = "AIzaSyAhbUP1g3JIOOybAtO-Pq2Pgt-PwlLvY60";
+    private UiSettings mUiSettings;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        //mapFragment.getMapAsync(this);
+        mapFragment.getMapAsync(this);
 
         Intent intent= getIntent();
         String type_serch = intent.getStringExtra("type");
@@ -62,12 +68,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        Location location = locationManager.getLastKnownLocation(bestProvider);
+        final Location location = locationManager.getLastKnownLocation(bestProvider);
         if (location != null) {
            onLocationChanged(location);
         }
         locationManager.requestLocationUpdates(bestProvider, 20000, 0, this);
-        getSearchLocation(type_serch);
+
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng point) {
+
+                mlatitude=point.latitude;
+                mlongitude=point.longitude;
+
+                LatLng latlng= new LatLng(mlatitude,mlongitude);
+                mMap.setMyLocationEnabled(true);
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
+                mMap.addMarker(new MarkerOptions()
+                        .title("My Location")
+                        .snippet("Use This location for find near Services ")
+                        .position(point));
+            }
+        });
+
     }
 
 
@@ -89,17 +113,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney,16));*/
 
+
+
     }
 
     @Override
     public void onLocationChanged(Location location) {
        // TextView locationTv = (TextView) findViewById(R.id.latlongLocation);
-         latitude = location.getLatitude();
-         longitude = location.getLongitude();
-        LatLng latLng = new LatLng(latitude, longitude);
+        mMap.clear();
+         mlatitude = location.getLatitude();
+         mlongitude = location.getLongitude();
+        LatLng latLng = new LatLng(mlatitude, mlongitude);
         mMap.addMarker(new MarkerOptions().position(latLng));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         //locationTv.setText("Latitude:" + latitude + ", Longitude:" + longitude);
     }
 
@@ -127,18 +154,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void getSearchLocation(String type){
-        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
-        googlePlacesUrl.append("location=" + latitude + "," + longitude);
-        googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-        googlePlacesUrl.append("&types=" + type);
-        googlePlacesUrl.append("&sensor=true");
-        googlePlacesUrl.append("&key=" + GOOGLE_API_KEY);
 
-        GooglePlacesReadTask googlePlacesReadTask = new GooglePlacesReadTask();
-        Object[] toPass = new Object[2];
-        toPass[0] = mMap;
-        toPass[1] = googlePlacesUrl.toString();
-        googlePlacesReadTask.execute(toPass);
-    }
+
 }

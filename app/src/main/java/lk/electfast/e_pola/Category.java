@@ -54,15 +54,18 @@ public class Category extends Activity implements OnItemClickListener
     // Insert The Data
     private void fillData()
     {
-        data.add(new Item("Facebook", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Twitter", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Linked In", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Google", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Yahoo", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("YouTube", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Flickr", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Whatsapp", getResources().getDrawable(R.mipmap.ic_launcher)));
-        data.add(new Item("Blogger", getResources().getDrawable(R.mipmap.ic_launcher)));
+        data.add(new Item("Carpenter", getResources().getDrawable(R.drawable.carpenter)));
+        data.add(new Item("Cleaning Service", getResources().getDrawable(R.drawable.cleaner)));
+        data.add(new Item("Delivery", getResources().getDrawable(R.drawable.delivery)));
+        data.add(new Item("Medical Services", getResources().getDrawable(R.drawable.doctor)));
+        data.add(new Item("Electrician", getResources().getDrawable(R.drawable.electrician)));
+        data.add(new Item("legal advice Services", getResources().getDrawable(R.drawable.lawyer)));
+        data.add(new Item("Catering Services", getResources().getDrawable(R.drawable.meals)));
+        data.add(new Item("Painting Services", getResources().getDrawable(R.drawable.paintroll)));
+        data.add(new Item("Plumbing Services", getResources().getDrawable(R.drawable.pipe)));
+        data.add(new Item("Taylor Services", getResources().getDrawable(R.drawable.sewingmachine)));
+        data.add(new Item("Taxi Services", getResources().getDrawable(R.drawable.taxi)));
+        data.add(new Item(" mechanical Services", getResources().getDrawable(R.drawable.wrench)));
     }
 
     // Set the Data Adapter
@@ -78,16 +81,16 @@ public class Category extends Activity implements OnItemClickListener
         String message = data.get(position).getTitle();
         Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
 
-if (message.equals("Facebook")){
+//if (message.equals("Carpenter")){
         Intent i = new Intent(Category.this, MapsActivity.class);
         // passing array index
-        i.putExtra("type", "atm");
+        i.putExtra("type", message);
 
         startActivity(i);
 
 
 
-}
+//}
 
     }
 
