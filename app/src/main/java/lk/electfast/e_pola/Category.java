@@ -1,5 +1,6 @@
 package lk.electfast.e_pola;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -74,8 +75,20 @@ public class Category extends Activity implements OnItemClickListener
     @Override
     public void onItemClick(final AdapterView<?> arg0, final View view, final int position, final long id)
     {
-        String message = "Clicked : " + data.get(position).getTitle();
+        String message = data.get(position).getTitle();
         Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+
+if (message.equals("Facebook")){
+        Intent i = new Intent(Category.this, MapsActivity.class);
+        // passing array index
+        i.putExtra("type", "atm");
+
+        startActivity(i);
+
+
+
+}
+
     }
 
 }
