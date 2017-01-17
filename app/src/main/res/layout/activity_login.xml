@@ -18,8 +18,7 @@
 
                 <AutoCompleteTextView android:id="@+id/email" android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:hint="@string/prompt_email"
-                    android:inputType="textEmailAddress" android:maxLines="1"
-                    android:singleLine="true" />
+                    android:inputType="textEmailAddress" android:maxLines="1" />
 
             </android.support.design.widget.TextInputLayout>
 
@@ -35,10 +34,11 @@
 
             </android.support.design.widget.TextInputLayout>
 
-            <Button android:id="@+id/email_sign_in_button" style="?android:textAppearanceSmall"
+            <Button android:id="@+id/email_sign_in_button" style="@style/Widget.AppCompat.Button.Borderless.Colored"
                 android:layout_width="match_parent" android:layout_height="wrap_content"
                 android:layout_marginTop="16dp" android:text="@string/action_sign_in"
-                android:textStyle="bold" />
+                android:background="@android:color/holo_blue_dark"
+                android:textAppearance="@style/TextAppearance.AppCompat.Widget.Button.Inverse" />
 
         </LinearLayout>
     </ScrollView>
@@ -46,14 +46,33 @@
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:gravity="bottom">
+
+        <Button
+            android:text="@string/register"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/reg_btn"
+            android:layout_weight="1"
+            android:background="@color/colorPrimary"
+
+            android:textAppearance="@style/TextAppearance.AppCompat.Inverse" />
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
 
         <Button
             android:text="Guest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/bypass"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead.Inverse"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:background="@color/colorPrimary" />
     </LinearLayout>
 
     <ProgressBar android:id="@+id/login_progress" style="?android:attr/progressBarStyleLarge"

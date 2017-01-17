@@ -1,14 +1,18 @@
 package lk.electfast.e_pola;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -17,12 +21,20 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestFactory;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
@@ -30,8 +42,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     double mlatitude = 0;
     double mlongitude = 0;
+    double clatitude = 0;
+    double clongitude = 0;
     private int PROXIMITY_RADIUS = 5000;
     private UiSettings mUiSettings;
+
+    private String jsonData;
+    private ProgressDialog pDialog;
+    String type_serch;
+    ArrayList<HashMap<String, String>> LocationList;
+    String sName,sEmail;
+
+
 
 
     @Override
@@ -47,8 +69,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+
         Intent intent= getIntent();
-        String type_serch = intent.getStringExtra("type");
+         type_serch = intent.getStringExtra("id");
+
 
 
         //SupportMapFragment supportMapFragment =
@@ -56,9 +82,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = mapFragment.getMap();
         mMap.setMyLocationEnabled(true);
         LocationManager locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-        Criteria criteria = new Criteria();
+        final Criteria criteria = new Criteria();
         String bestProvider = locationManager.getBestProvider(criteria, true);
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -89,6 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .title("My Location")
                         .snippet("Use This location for find near Services ")
                         .position(point));
+
             }
         });
 
@@ -155,5 +184,104 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
+    public class AddListOnMap extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            // Showing progress dialog
+            pDialog = new ProgressDialog(MapsActivity.this);
+            pDialog.setMessage("Please wait...");
+            pDialog.setCancelable(false);
+            pDialog.show();
+
+        }
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            String JString = type_serch;
+
+            if(JString != null){
+
+                try {
+                    JSONObject jsonObject = new JSONObject(JString);
+
+                    JSONArray Jlist = jsonObject.getJSONArray("list");
+
+                    for (int i = 0; i < Jlist.length(); i++){
+                        final HashMap<String, String> Location = new HashMap<>();
+                        JSONObject c = Jlist.getJSONObject(i);
+
+                        String serviceName = c.getString("serviceName");
+                        String email = c.getString("email");
+                        String add = c.getString("address");
+                        String Lat = c.getString("latitude");
+                        String Lag = c.getString("longitude");
+                        String status=c.getString("status");
+
+                        clatitude = Double.parseDouble(Lat);
+                        clongitude = Double.parseDouble(Lag);
+                        sName=serviceName;
+                        sEmail=email;
+
+
+                        Location.put("name",serviceName);
+                        Location.put("email",email);
+                        Location.put("address",add);
+                        Location.put("lat",Lat);
+                        Location.put("lag",Lag);
+                        Location.put("status",status);
+
+                        LatLng point = new LatLng(clatitude,clatitude);
+                        mMap.setMyLocationEnabled(true);
+                        //mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+                        mMap.addMarker(new MarkerOptions()
+                                .title(sName)
+                                .snippet(sEmail)
+                                .position(point));
+
+
+                        LocationList.add(Location);
+
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                System.out.println("thiwanka    dsffff");
+
+
+                            }
+                        });
+                    }
+
+                } catch (final JSONException e) {
+                    Log.e("TAG", "Json parsing error: " + e.getMessage());
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(),
+                                    "Json parsing error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                        }
+                    });
+
+                }
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Dismiss the progress dialog
+            if (pDialog.isShowing())
+                pDialog.dismiss();
+
+
+        }
+    }
 
 }

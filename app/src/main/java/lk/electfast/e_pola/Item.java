@@ -10,6 +10,7 @@ public class Item
 {
     String title;
     Drawable image;
+    String id_cat;
 
     // Empty Constructor
     public Item()
@@ -18,11 +19,12 @@ public class Item
     }
 
     // Constructor
-    public Item(String title, Drawable image)
+    public Item(String title, Drawable image,String id_cat)
     {
         super();
         this.title = title;
         this.image = image;
+        this.id_cat = id_cat;
     }
 
     // Getter and Setter Method
@@ -45,6 +47,17 @@ public class Item
     {
         this.image = image;
     }
+
+    public String getId_cat()
+    {
+        return id_cat;
+    }
+
+    public void setId_cat(String id_cat)
+    {
+        this.id_cat = id_cat;
+    }
+
 
 
 }

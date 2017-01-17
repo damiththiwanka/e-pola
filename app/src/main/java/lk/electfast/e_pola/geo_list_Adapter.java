@@ -26,18 +26,18 @@ import java.util.HashMap;
  */
 
 public class geo_list_Adapter extends AsyncTask<Void, Void, Boolean> {
-    private final String mEmail;
-    private final String mPassword;
+   private  String mEmail;
+    private  String mPassword;
 
     private static final int REQUEST_READ_CONTACTS = 0;
-    private String JsonResponse = null;
+    public String JsonResponse = null;
     private  String state,msg;
 
     ArrayList<HashMap<String, String>> LocationList;
 
-    geo_list_Adapter(String email, String password) {
-        mEmail = email;
-        mPassword = password;
+    geo_list_Adapter() {
+        /*mEmail = email;
+        mPassword = password;*/
     }
 
     @Override
@@ -45,7 +45,7 @@ public class geo_list_Adapter extends AsyncTask<Void, Void, Boolean> {
         // TODO: attempt authentication against a network service.
 
 
-        JSONObject post_dict = new JSONObject();
+        /*JSONObject post_dict = new JSONObject();
 
         try {
             post_dict.put("username" ,mEmail );
@@ -64,18 +64,18 @@ public class geo_list_Adapter extends AsyncTask<Void, Void, Boolean> {
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
         try {
-            URL url = new URL("http://192.168.1.6:3000/userRouter/authenticate");
+            URL url = new URL("http://192.168.178.165/DsiSgcs/serviselist.json");
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setDoOutput(true);
             // is output buffer writter
-            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestMethod("GET");
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setRequestProperty("Accept", "application/json");
 //set headers and method
-            Writer writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8"));
-            writer.write(JsonDATA);
+          *//*  Writer writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8"));
+            writer.write(JsonDATA);*//*
 // json data
-            writer.close();
+           // writer.close();
             InputStream inputStream = urlConnection.getInputStream();
 //input stream
             StringBuffer buffer = new StringBuffer();
@@ -117,7 +117,17 @@ public class geo_list_Adapter extends AsyncTask<Void, Void, Boolean> {
                     Log.e("TAG", "Error closing stream", e);
                 }
             }
-        }
+        }*/
+
+
+       HttpHandler sh = new HttpHandler();
+
+        // Making a request to url and getting response
+         JsonResponse = sh.makeServiceCall("http://192.168.178.165/DsiSgcs/serviselist.json");
+
+        Log.i("TAG Responce", JsonResponse);
+
+
         return true;
 
 
@@ -151,5 +161,8 @@ public class geo_list_Adapter extends AsyncTask<Void, Void, Boolean> {
     protected void onCancelled() {
 
     }
+
+
+
 }
 

@@ -82,6 +82,7 @@ private  String state,msg;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private Button reg_btn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +90,17 @@ private  String state,msg;
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
+
+         populateAutoComplete();
+
+        reg_btn = (Button)  findViewById(R.id.reg_btn);
+        reg_btn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent reg = new Intent(LoginActivity.this,Register.class);
+                startActivity(reg);
+            }
+        });
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {

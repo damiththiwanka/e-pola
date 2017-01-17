@@ -32,6 +32,7 @@ public class Category extends Activity implements OnItemClickListener
     GridView gridview;
     GridViewAdapter gridviewAdapter;
     ArrayList<Item> data = new ArrayList<Item>();
+    private geo_list_Adapter mGeo_list_adapter=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -54,18 +55,18 @@ public class Category extends Activity implements OnItemClickListener
     // Insert The Data
     private void fillData()
     {
-        data.add(new Item("Carpenter", getResources().getDrawable(R.drawable.carpenter)));
-        data.add(new Item("Cleaning Service", getResources().getDrawable(R.drawable.cleaner)));
-        data.add(new Item("Delivery", getResources().getDrawable(R.drawable.delivery)));
-        data.add(new Item("Medical Services", getResources().getDrawable(R.drawable.doctor)));
-        data.add(new Item("Electrician", getResources().getDrawable(R.drawable.electrician)));
-        data.add(new Item("legal advice Services", getResources().getDrawable(R.drawable.lawyer)));
-        data.add(new Item("Catering Services", getResources().getDrawable(R.drawable.meals)));
-        data.add(new Item("Painting Services", getResources().getDrawable(R.drawable.paintroll)));
-        data.add(new Item("Plumbing Services", getResources().getDrawable(R.drawable.pipe)));
-        data.add(new Item("Taylor Services", getResources().getDrawable(R.drawable.sewingmachine)));
-        data.add(new Item("Taxi Services", getResources().getDrawable(R.drawable.taxi)));
-        data.add(new Item(" mechanical Services", getResources().getDrawable(R.drawable.wrench)));
+        data.add(new Item("Carpenter", getResources().getDrawable(R.drawable.carpenter),"1"));
+        data.add(new Item("Cleaning Service", getResources().getDrawable(R.drawable.cleaner),"2"));
+        data.add(new Item("Delivery", getResources().getDrawable(R.drawable.delivery),"3"));
+        data.add(new Item("Medical Services", getResources().getDrawable(R.drawable.doctor),"4"));
+        data.add(new Item("Electrician", getResources().getDrawable(R.drawable.electrician),"5"));
+        data.add(new Item("legal advice Services", getResources().getDrawable(R.drawable.lawyer),"6"));
+        data.add(new Item("Catering Services", getResources().getDrawable(R.drawable.meals),"7"));
+        data.add(new Item("Painting Services", getResources().getDrawable(R.drawable.paintroll),"8"));
+        data.add(new Item("Plumbing Services", getResources().getDrawable(R.drawable.pipe),"9"));
+        data.add(new Item("Taylor Services", getResources().getDrawable(R.drawable.sewingmachine),"10"));
+        data.add(new Item("Taxi Services", getResources().getDrawable(R.drawable.taxi),"11"));
+        data.add(new Item(" mechanical Services", getResources().getDrawable(R.drawable.wrench),"12"));
     }
 
     // Set the Data Adapter
@@ -79,14 +80,22 @@ public class Category extends Activity implements OnItemClickListener
     public void onItemClick(final AdapterView<?> arg0, final View view, final int position, final long id)
     {
         String message = data.get(position).getTitle();
-        Toast.makeText(getApplicationContext(), message , Toast.LENGTH_SHORT).show();
+        String ID_cat = data.get(position).getId_cat();
+        Toast.makeText(getApplicationContext(), message +" "+ ID_cat, Toast.LENGTH_SHORT).show();
 
 //if (message.equals("Carpenter")){
         Intent i = new Intent(Category.this, MapsActivity.class);
         // passing array index
-        i.putExtra("type", message);
+
+        mGeo_list_adapter = new geo_list_Adapter();
+        mGeo_list_adapter.execute((Void) null);
+       String date2= mGeo_list_adapter.JsonResponse;
+        i.putExtra("id", date2);
 
         startActivity(i);
+
+
+
 
 
 
