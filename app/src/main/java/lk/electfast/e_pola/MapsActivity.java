@@ -2,6 +2,7 @@ package lk.electfast.e_pola;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -21,18 +22,25 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.apache.http.HttpRequest;
-import org.apache.http.HttpRequestFactory;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -53,6 +61,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     ArrayList<HashMap<String, String>> LocationList;
     String sName,sEmail;
 
+    private String createtext="192.168.137.25";
+    String JsonResponse;
+
+    String Token;
 
 
 
@@ -68,6 +80,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("LogToken", 0); // 0 - for private mode
+        SharedPreferences.Editor editor = pref.edit();
+
+        Token = pref.getString("key", null);
+
+
 
 
 
@@ -109,7 +128,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 mlatitude=point.latitude;
                 mlongitude=point.longitude;
-
+                mMap.clear();
                 LatLng latlng= new LatLng(mlatitude,mlongitude);
                 mMap.setMyLocationEnabled(true);
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
@@ -120,6 +139,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
             }
         });
+
+
 
     }
 
@@ -149,7 +170,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onLocationChanged(Location location) {
        // TextView locationTv = (TextView) findViewById(R.id.latlongLocation);
-        mMap.clear();
+
          mlatitude = location.getLatitude();
          mlongitude = location.getLongitude();
         LatLng latLng = new LatLng(mlatitude, mlongitude);
@@ -199,51 +220,103 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         @Override
         protected Void doInBackground(Void... params) {
 
-            String JString = type_serch;
+            JSONObject Jbody = new JSONObject();
 
-            if(JString != null){
+            try {
+                Jbody.put("categoryName", Token);
+                Jbody.put("lat", mlatitude);
+                Jbody.put("lng", mlongitude);
+                Jbody.put("radius", 5);
 
-                try {
-                    JSONObject jsonObject = new JSONObject(JString);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-                    JSONArray Jlist = jsonObject.getJSONArray("list");
+            String JsonDATA = String.valueOf(Jbody);
 
-                    for (int i = 0; i < Jlist.length(); i++){
-                        final HashMap<String, String> Location = new HashMap<>();
-                        JSONObject c = Jlist.getJSONObject(i);
-
-                        String serviceName = c.getString("serviceName");
-                        String email = c.getString("email");
-                        String add = c.getString("address");
-                        String Lat = c.getString("latitude");
-                        String Lag = c.getString("longitude");
-                        String status=c.getString("status");
-
-                        clatitude = Double.parseDouble(Lat);
-                        clongitude = Double.parseDouble(Lag);
-                        sName=serviceName;
-                        sEmail=email;
+            Log.i("TAG_jDATA", JsonDATA);
 
 
-                        Location.put("name",serviceName);
-                        Location.put("email",email);
-                        Location.put("address",add);
-                        Location.put("lat",Lat);
-                        Location.put("lag",Lag);
-                        Location.put("status",status);
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+            try {
+                URL url = new URL("http://" + createtext + ":3000/userRouter/authenticate");
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setDoOutput(true);
+                // is output buffer writter
+                urlConnection.setRequestMethod("POST");
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+                urlConnection.setRequestProperty("Accept", "application/json");
+                urlConnection.setRequestProperty("x-access-token",Token);
+//set headers and method
+                Writer writer = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream(), "UTF-8"));
+                writer.write(JsonDATA);
+// json data
+                writer.close();
+                InputStream inputStream = urlConnection.getInputStream();
+//input stream
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
 
-                        LatLng point = new LatLng(clatitude,clatitude);
-                        mMap.setMyLocationEnabled(true);
-                        //mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-                        mMap.addMarker(new MarkerOptions()
-                                .title(sName)
-                                .snippet(sEmail)
-                                .position(point));
+                String inputLine;
+                while ((inputLine = reader.readLine()) != null)
+                    buffer.append(inputLine + "\n");
+                if (buffer.length() == 0) {
+                    // Stream was empty. No point in parsing.
+                    return null;
+                }
+                JsonResponse = buffer.toString();
 
 
-                        LocationList.add(Location);
+                String JString = type_serch;
 
-                        runOnUiThread(new Runnable() {
+                if (JString != null) {
+
+                    try {
+                        JSONObject jsonObject = new JSONObject(JString);
+
+                        JSONArray Jlist = jsonObject.getJSONArray("list");
+
+                        for (int i = 0; i < Jlist.length(); i++) {
+                            final HashMap<String, String> Location = new HashMap<>();
+                            JSONObject c = Jlist.getJSONObject(i);
+
+                            String serviceName = c.getString("serviceName");
+                            String email = c.getString("email");
+                            String add = c.getString("address");
+                            String Lat = c.getString("latitude");
+                            String Lag = c.getString("longitude");
+                            String status = c.getString("status");
+
+                            clatitude = Double.parseDouble(Lat);
+                            clongitude = Double.parseDouble(Lag);
+                            sName = serviceName;
+                            sEmail = email;
+
+
+                            Location.put("name", serviceName);
+                            Location.put("email", email);
+                            Location.put("address", add);
+                            Location.put("lat", Lat);
+                            Location.put("lag", Lag);
+                            Location.put("status", status);
+
+                            LatLng point = new LatLng(clatitude, clatitude);
+                            mMap.setMyLocationEnabled(true);
+                            //mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+                            mMap.addMarker(new MarkerOptions()
+                                    .title(sName)
+                                    .snippet(sEmail)
+                                    .position(point));
+
+
+                            LocationList.add(Location);
+
+                        /*runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
 
@@ -251,29 +324,39 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                             }
-                        });
-                    }
-
-                } catch (final JSONException e) {
-                    Log.e("TAG", "Json parsing error: " + e.getMessage());
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(getApplicationContext(),
-                                    "Json parsing error: " + e.getMessage(),
-                                    Toast.LENGTH_LONG)
-                                    .show();
+                        });*/
                         }
-                    });
 
+                    } catch (final JSONException e) {
+                        Log.e("TAG", "Json parsing error: " + e.getMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(getApplicationContext(),
+                                        "Json parsing error: " + e.getMessage(),
+                                        Toast.LENGTH_LONG)
+                                        .show();
+                            }
+                        });
+
+                    }
                 }
-            }
 
+
+                return null;
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (ProtocolException e) {
+                e.printStackTrace();
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             return null;
         }
-
-        @Override
+            @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
             // Dismiss the progress dialog

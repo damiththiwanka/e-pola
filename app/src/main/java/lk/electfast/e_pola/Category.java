@@ -66,7 +66,7 @@ public class Category extends Activity implements OnItemClickListener
         data.add(new Item("Plumbing Services", getResources().getDrawable(R.drawable.pipe),"9"));
         data.add(new Item("Taylor Services", getResources().getDrawable(R.drawable.sewingmachine),"10"));
         data.add(new Item("Taxi Services", getResources().getDrawable(R.drawable.taxi),"11"));
-        data.add(new Item(" mechanical Services", getResources().getDrawable(R.drawable.wrench),"12"));
+        data.add(new Item("Mechanical Services", getResources().getDrawable(R.drawable.wrench),"12"));
     }
 
     // Set the Data Adapter

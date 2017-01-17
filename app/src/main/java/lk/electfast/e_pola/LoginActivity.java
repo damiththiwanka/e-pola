@@ -3,9 +3,12 @@ package lk.electfast.e_pola;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.nfc.Tag;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -38,6 +41,8 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -63,8 +68,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
     private String JsonResponse = null;
-private  String state,msg;
-
+private  String state,msg,token;
+    private String createtext="192.168.137.25";
     /**
      * A dummy authentication store containing known user names and passwords.
      * TODO: remove after connecting to a real authentication system.
@@ -384,7 +389,7 @@ private  String state,msg;
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             try {
-                URL url = new URL("http://192.168.1.6:3000/userRouter/authenticate");
+                URL url = new URL("http://192.168.137.25:3000/userRouter/authenticate");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 // is output buffer writter
@@ -456,6 +461,8 @@ private  String state,msg;
             showProgress(false);
 
 
+
+
             if (JsonResponse != null) {
                 try {
 
@@ -463,6 +470,8 @@ private  String state,msg;
 
                     state =jsonObj.getString("success");
                      msg =jsonObj.getString("msg");
+                    token=jsonObj.getString("token");
+
 
                     Log.i("TAG_State", state);
 
@@ -481,6 +490,13 @@ private  String state,msg;
                     mPasswordView.setError(getString(R.string.error_incorrect_password));
                     mPasswordView.requestFocus();
                 }
+
+
+                SharedPreferences pref = getApplicationContext().getSharedPreferences("LogToken", 0); // 0 - for private mode
+                SharedPreferences.Editor editor = pref.edit();
+
+                editor.putString("key", token);
+                editor.commit();
             }
         }
 
@@ -489,6 +505,32 @@ private  String state,msg;
             mAuthTask = null;
             showProgress(false);
         }
+    }
+
+    private String readFromFile(Context context) {
+
+        try {
+            File sdcard = Environment.getDataDirectory();
+            File myFile = new File(sdcard,"config.txt");
+            FileInputStream fIn = new FileInputStream(myFile);
+            BufferedReader myReader = new BufferedReader(
+                    new InputStreamReader(fIn));
+            String aDataRow = "";
+            String aBuffer = "";
+            while ((aDataRow = myReader.readLine()) != null) {
+                aBuffer += aDataRow + "\n";
+            }
+            createtext=aBuffer;
+            myReader.close();
+            Toast.makeText(getBaseContext(),
+                    "Done reading SD 'mysdfile.txt'",
+                    Toast.LENGTH_SHORT).show();
+        } catch (Exception e) {
+            Toast.makeText(getBaseContext(), e.getMessage(),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        return createtext;
     }
 }
 
