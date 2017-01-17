@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     String JsonResponse;
 
     String Token;
-
+    private AddListOnMap mATask = null;
 
 
     @Override
@@ -87,8 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Token = pref.getString("key", null);
 
 
-
-
+        System.out.println(Token);
 
 
         Intent intent= getIntent();
@@ -137,10 +136,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         .snippet("Use This location for find near Services ")
                         .position(point));
 
+                mATask = new AddListOnMap();
+                mATask.execute((Void) null);
+
             }
         });
 
-
+        mATask = new AddListOnMap();
+        mATask.execute((Void) null);
 
     }
 
@@ -223,10 +226,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             JSONObject Jbody = new JSONObject();
 
             try {
-                Jbody.put("categoryName", Token);
+                Jbody.put("serviceCId", type_serch);
                 Jbody.put("lat", mlatitude);
                 Jbody.put("lng", mlongitude);
-                Jbody.put("radius", 5);
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -240,7 +243,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             try {
-                URL url = new URL("http://" + createtext + ":3000/userRouter/authenticate");
+                URL url = new URL("http://" + createtext + ":3000/requestService/findServices");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 // is output buffer writter
@@ -359,6 +362,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+                mATask=null;
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();

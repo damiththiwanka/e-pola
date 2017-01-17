@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">E_pola</string>
+    <string name="app_name">e-pola</string>
 
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>

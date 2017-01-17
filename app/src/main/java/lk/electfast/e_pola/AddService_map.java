@@ -38,7 +38,7 @@ public class AddService_map extends FragmentActivity implements OnMapReadyCallba
 
                 LatLng latlng= new LatLng(mlatitude2,mlongitude2);
                 mMap2.setMyLocationEnabled(true);
-                mMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
+               // mMap2.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 13));
                 mMap2.addMarker(new MarkerOptions()
                         .title("My Location")
                         .position(point))

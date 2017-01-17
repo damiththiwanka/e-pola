@@ -32,27 +32,8 @@ public class Splash extends AppCompatActivity {
             }
         }, SPLASH_DISPLAY_LENGTH);
 
-        writeToFile(createtext , Splash.this);
+
     }
 
-    private void writeToFile(String data,Context context) {
-        try {
-            File sdcard = Environment.getDataDirectory();
-            File myFile = new File(sdcard,"config.txt");
-            myFile.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(myFile);
-            OutputStreamWriter myOutWriter =
-                    new OutputStreamWriter(fOut);
-            myOutWriter.append(data);
-            myOutWriter.close();
-            fOut.close();
-            Toast.makeText(getBaseContext(),
-                    "Done writing SD 'mysdfile.txt'",
-                    Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.getMessage(),
-                    Toast.LENGTH_SHORT).show();
-        }
-    }
 
 }

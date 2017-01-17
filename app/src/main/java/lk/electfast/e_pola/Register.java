@@ -15,6 +15,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -179,10 +180,20 @@ private String state,msg;
             JSONObject Jbody = new JSONObject();
 
             try {
-                Jbody.put("FullName",Name);
-                Jbody.put("Contact",Contact);
-                Jbody.put("email",email);
+                Jbody.put("fullName",Name);
+                Jbody.put("username",email);
                 Jbody.put("password",pass);
+
+                JSONArray Jcontact = new JSONArray();
+                JSONObject JContactNO =new JSONObject();
+
+                JContactNO.put("contactNumber",Contact);
+
+                Jcontact.put(JContactNO);
+
+                Jbody.put("contacts",Jcontact);
+
+
 
             }catch (Exception e){
                 e.printStackTrace();
@@ -282,29 +293,4 @@ private String state,msg;
     }
 
 
-    private String readFromFile(Context context) {
-
-        try {
-            File sdcard = Environment.getDataDirectory();
-            File myFile = new File(sdcard,"config.txt");
-            FileInputStream fIn = new FileInputStream(myFile);
-            BufferedReader myReader = new BufferedReader(
-                    new InputStreamReader(fIn));
-            String aDataRow = "";
-            String aBuffer = "";
-            while ((aDataRow = myReader.readLine()) != null) {
-                aBuffer += aDataRow + "\n";
-            }
-            createtext=aBuffer;
-            myReader.close();
-            Toast.makeText(getBaseContext(),
-                    "Done reading SD 'mysdfile.txt'",
-                    Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.getMessage(),
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        return createtext;
-    }
-}
+  }

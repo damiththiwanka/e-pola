@@ -89,6 +89,8 @@ private  String state,msg,token;
     private View mLoginFormView;
     private Button reg_btn;
 
+    private String IP;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -139,6 +141,8 @@ private  String state,msg,token;
                 startActivity(i);
             }
         });
+
+
     }
 
     private void populateAutoComplete() {
@@ -389,7 +393,7 @@ private  String state,msg,token;
             HttpURLConnection urlConnection = null;
             BufferedReader reader = null;
             try {
-                URL url = new URL("http://192.168.137.25:3000/userRouter/authenticate");
+                URL url = new URL("http://192.168.137.25:3000/user/login");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setDoOutput(true);
                 // is output buffer writter
@@ -468,8 +472,8 @@ private  String state,msg,token;
 
                     JSONObject jsonObj = new JSONObject(JsonResponse);
 
-                    state =jsonObj.getString("success");
-                     msg =jsonObj.getString("msg");
+                    state =jsonObj.getString("status");
+                     msg =jsonObj.getString("success");
                     token=jsonObj.getString("token");
 
 
@@ -480,10 +484,10 @@ private  String state,msg,token;
                     Log.e("TAG", "Json parsing error: " + e.getMessage());
                 }
 
-                if (state.equals("true")) {
+                if (msg.equals("true")) {
                     Intent i = new Intent(LoginActivity.this, Category.class);
                     // passing array index
-                    i.putExtra("id", "electfastd");
+                    i.putExtra("id", token);
                     startActivity(i);
 
                 } else {
@@ -507,30 +511,6 @@ private  String state,msg,token;
         }
     }
 
-    private String readFromFile(Context context) {
 
-        try {
-            File sdcard = Environment.getDataDirectory();
-            File myFile = new File(sdcard,"config.txt");
-            FileInputStream fIn = new FileInputStream(myFile);
-            BufferedReader myReader = new BufferedReader(
-                    new InputStreamReader(fIn));
-            String aDataRow = "";
-            String aBuffer = "";
-            while ((aDataRow = myReader.readLine()) != null) {
-                aBuffer += aDataRow + "\n";
-            }
-            createtext=aBuffer;
-            myReader.close();
-            Toast.makeText(getBaseContext(),
-                    "Done reading SD 'mysdfile.txt'",
-                    Toast.LENGTH_SHORT).show();
-        } catch (Exception e) {
-            Toast.makeText(getBaseContext(), e.getMessage(),
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        return createtext;
-    }
 }
 
